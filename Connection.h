@@ -12,13 +12,15 @@ using namespace std;
 
 class Connection {
 	public:
-		Connection(string host = "", int port = 27017, string username = "", string password = "");
+		Connection(bool auto_connect = true, string host = "", int port = 27017, string username = "", string password = "");
 		~Connection();
 		void connect();
+		bool authenticate(string dbname, string username, string password);
 		vector<string> database_names();
 		Database *get_database(string name);
 		Connection *get_master(string dbname, string username, string password, bool is_digest = false);
 		
+		// Getter and Setters
 		void w(string write_concern);
 		string w();
 		void wtimeout(int write_timeout);
@@ -29,11 +31,15 @@ class Connection {
 	private:
 		DBClientConnection *_conn;
 		DBClientReplicaSet *_replica_conn;
-		HostAndPort *_hostport;
+		HostAndPort        *_hostport;
+		
 		string 	_w;
 		int 	_wtimeout;
 		int 	_timeout;
 		string	_username;
 		string 	_password;
 		int 	_query_timeout;
+		
+		bool is_master;
+		bool is_connected;
 };
