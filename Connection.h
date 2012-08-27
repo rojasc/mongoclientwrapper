@@ -1,9 +1,10 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include "client/dbclient.h"
-#include "client/dbclient_rs.h"
-#include "util/net/hostandport.h"
+#include <algorithm>
+#include "mongo/client/dbclient.h"
+#include "mongo/util/net/hostandport.h"
+#include "mongo/bson/bsonobj.h"
 
 #include "Database.h"
 
@@ -12,13 +13,13 @@ using namespace std;
 
 class Connection {
 	public:
-		Connection(bool auto_connect = true, string host = "", int port = 27017, string username = "", string password = "");
+		Connection(string host = "", int port = 27017, string username = "", string password = "");
 		~Connection();
 		void connect();
 		bool authenticate(string dbname, string username, string password);
 		vector<string> database_names();
 		Database *get_database(string name);
-		Connection *get_master(string dbname, string username, string password, bool is_digest = false);
+		Connection *get_master();
 		
 		// Getter and Setters
 		void w(string write_concern);
@@ -29,9 +30,8 @@ class Connection {
 		int query_timeout();
 		
 	private:
-		DBClientConnection *_conn;
-		DBClientReplicaSet *_replica_conn;
-		HostAndPort        *_hostport;
+		DBClientBase *_conn;
+		HostAndPort  *_hostport;
 		
 		string 	_w;
 		int 	_wtimeout;
